@@ -5,9 +5,12 @@ import (
 
 	"github.com/devfullcycle/imersao10-consolidacao/internal/domain/entity"
 )
+
+var errNotEnoughMoney = errors.New("not enough money")
+
 func ChoosePlayers(myTeam *entity.MyTeam, myPlayers []entity.Player, players []entity.Player) error {
 	totalCost := 0.0
-	totalEarned := 0.0
+	totalEarned := calculateTotalEarned(myPlayers, players)
 
 	for _, player := range players {
 		if !playerInMyTeam(player, *myTeam) && playerInPlayersList(player, players) {
@@ -16,7 +19,7 @@ func ChoosePlayers(myTeam *entity.MyTeam, myPlayers []entity.Player, players []e
 	}
 
 	if totalCost > myTeam.Score+totalEarned {
-		return errors.New("not enough money")
+		return errNotEnoughMoney
 	}
 
 	myTeam.Score += totalEarned - totalCost
@@ -44,4 +47,15 @@ func playerInPlayersList(player entity.Player, players []entity.Player) bool {
 		}
 	}
 	return false
+}
+
+// get the difference between two slices
+func calculateTotalEarned(myPlayers []entity.Player, players []entity.Player) float64 {
+	var totalEarned float64
+	for _, myPlayer := range myPlayers {
+		if !playerInPlayersList(myPlayer, players) {
+			totalEarned += myPlayer.Price
+		}
+	}
+	return totalEarned
 }

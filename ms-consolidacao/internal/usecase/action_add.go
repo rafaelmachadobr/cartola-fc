@@ -32,6 +32,7 @@ func NewActionAddUseCase(uow uow.UowInterface, actionTable entity.ActionTableInt
 	}
 }
 
+// execute
 func (a *ActionAddUseCase) Execute(ctx context.Context, input ActionAddInput) error {
 	err := a.Uow.Do(ctx, func(_ *uow.Uow) error {
 		matchRepo := a.getMatchRepository(ctx)
@@ -42,6 +43,7 @@ func (a *ActionAddUseCase) Execute(ctx context.Context, input ActionAddInput) er
 		if err != nil {
 			return err
 		}
+		// fmt.Printf("match: %v", match)
 
 		score, err := a.ActionTable.GetScore(input.Action)
 		if err != nil {
